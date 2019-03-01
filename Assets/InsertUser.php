@@ -6,7 +6,7 @@
 	
 	$username = $_POST["usernamePost"];
 	$password = $_POST["passwordPost"];
-	$useremail = $_POST["useremailPost"];
+	$email = $_POST["emailPost"];
 	
 	$conn = new mysqli($server_name, $server_user, $server_password, $database_name);
 	
@@ -45,11 +45,11 @@
 			echo "Create First User";
 		}
 	}
-	if($canmakeaccount == "check email" && mysql_num_rows($finduserresult)>0)
+	if($canmakeaccount == "check email" && mysqli_num_rows($finduserresult)>0)
 	{
 		$checkemail = "SELECT email FROM users";
 		$checkemailresult = mysqli_query($conn, $checkemail);
-		if(mysqli_num_rows($checkmailresult)>0)
+		if(mysqli_num_rows($checkemailresult)>0)
 		{
 			while($row = mysqli_fetch_assoc($checkemailresult))
 			{
