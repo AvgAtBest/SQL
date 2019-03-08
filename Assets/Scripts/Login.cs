@@ -1,11 +1,22 @@
-﻿using System.Collections;
+﻿#region Unity Systems
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+#endregion
+#region System Security directories
+using System.Net;
+using System.Net.Mail;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Linq;
+#endregion
 
 public class Login : MonoBehaviour
 {
+    #region Variables
     [Header("LoginDeets")]
     public InputField usernameLogin;
     public InputField passwordLogin;
@@ -14,32 +25,18 @@ public class Login : MonoBehaviour
     public InputField passwordCreate;
     public InputField emailCreate;
     public InputField passwordConfirm;
-    [Header("Recover")]
+    [Header("Recovery")]
     public InputField emailRecovery;
-    [Header("Buttons")]
-    public Button confirmButton;
-    public Button cancelButton;
-    public Button loginButton;
-    public Button registerButton;
-    public Button recoveryButton;
+    private static System.Random random = new System.Random();
+    public string code;
+    public InputField codeInput;
     [Header("Strings")]
     public string inputUsername;
     public string inputPassword;
     public string inputPasswordConfirm;
     public string inputEmail;
-    [Header("Panels")]
-    public GameObject loginPanel, registerPanel, recoveryPanel;
-    // Use this for initialization
-
-    public void Update()
-    {
-        //usernameCreate.text = inputPassword;
-        //passwordCreate.text = inputPassword;
-        //emailCreate.text = inputEmail;
-
-
-
-    }
+    #endregion
+    #region Register Data
     IEnumerator CreateUser(string _username, string _password, string _email)
     {
         //grabs info from database
@@ -75,6 +72,8 @@ public class Login : MonoBehaviour
         }
 
     }
+    #endregion
+    #region LoginData
     public void InputLoginData()
     {
         inputUsername = usernameLogin.text;
@@ -95,5 +94,45 @@ public class Login : MonoBehaviour
         yield return www;
         Debug.Log(www.text);
     }
+    #endregion
+    #region Recovery Data
+    public void SendEmail(string email)
+    {
+        code = RandomString(8);
+        
+        MailMessage mail = new MailMessage();
+        MailAddress ourMail = new MailAddress("sqlunityclasssydney@gmail.com", "MrJerkenburger's Jerken Burgers");
 
+        mail.To.Add(email);
+        mail.From = ourMail;
+
+        mail.Subject = "SQueaL Games User";
+        mail.Body = "Hello" + inputUsername + "\n Here is the recovery code you requested to reset your password: " + code;
+
+        SmtpClient smtpServer = new SmtpClient("smtp.gmail.com");
+        smtpServer.Port = 25;
+        smtpServer.Credentials = new System.Net.NetworkCredential("sqlunityclasssydney@gmail.com", "sqlpassword") as ICredentialsByHost;
+
+        smtpServer.EnableSsl = true;
+
+        ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate cert, X509Chain chain, SslPolicyErrors policyErrors)
+        { return true; };
+
+        smtpServer.Send(mail);
+        Debug.Log("Success");
+
+
+    }
+    public static string RandomString(int length)
+    {
+        const string chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789";
+        return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        
+    }
+    public void ForgotPass()
+    {
+        inputEmail = emailRecovery.text;
+        SendEmail(inputEmail);
+    }
+    #endregion
 }
