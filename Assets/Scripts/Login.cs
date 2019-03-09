@@ -25,17 +25,29 @@ public class Login : MonoBehaviour
     public InputField passwordCreate;
     public InputField emailCreate;
     public InputField passwordConfirm;
+    public GameObject invalidEmailAddressText;
+    public GameObject wrongPasswordConfirmText;
     [Header("Recovery")]
     public InputField emailRecovery;
     private static System.Random random = new System.Random();
     public string code;
     public InputField codeInput;
+    public GameObject emptyFieldWarning;
     [Header("Strings")]
     public string inputUsername;
     public string inputPassword;
     public string inputPasswordConfirm;
     public string inputEmail;
+    [Header("Port")]
+    public int port = 587; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
+    [Header("Scripts")]
+    public UIManager UICeo;
     #endregion
+    private void Awake()
+    {
+        UICeo = GameObject.Find("UIManager").GetComponent<UIManager>();
+
+    }
     #region Register Data
     IEnumerator CreateUser(string _username, string _password, string _email)
     {
@@ -52,7 +64,7 @@ public class Login : MonoBehaviour
 
         Debug.Log(www.text);
     }
-    
+
     public void InputRegisterData()
     {
 
@@ -64,11 +76,28 @@ public class Login : MonoBehaviour
         inputPasswordConfirm = passwordConfirm.text;
         inputEmail = emailCreate.text;
 
-        if (inputPassword == inputPasswordConfirm)
+
+
+        if (inputPassword == inputPasswordConfirm && emailCreate.text.Contains("@"))
         {
             StartCoroutine(CreateUser(inputUsername, inputPassword, inputEmail));
             Debug.Log("testing");
+            if(inputPassword == inputPasswordConfirm)
+            {
+                wrongPasswordConfirmText.SetActive(false);
+            }
+            if (emailCreate.text.Contains("@"))
+            {
+                invalidEmailAddressText.SetActive(false);
+            }
 
+        }
+        else if(inputPassword != inputPasswordConfirm || emailCreate.text.Contains(""))
+        {
+
+            invalidEmailAddressText.SetActive(!emailCreate.text.Contains("@"));
+
+            wrongPasswordConfirmText.SetActive(inputPassword != inputPasswordConfirm);
         }
 
     }
@@ -99,7 +128,7 @@ public class Login : MonoBehaviour
     public void SendEmail(string email)
     {
         code = RandomString(8);
-        
+
         MailMessage mail = new MailMessage();
         MailAddress ourMail = new MailAddress("sqlunityclasssydney@gmail.com", "MrJerkenburger's Jerken Burgers");
 
@@ -110,7 +139,7 @@ public class Login : MonoBehaviour
         mail.Body = "Hello" + inputUsername + "\n Here is the recovery code you requested to reset your password: " + code;
 
         SmtpClient smtpServer = new SmtpClient("smtp.gmail.com");
-        smtpServer.Port = 25;
+        smtpServer.Port = port; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
         smtpServer.Credentials = new System.Net.NetworkCredential("sqlunityclasssydney@gmail.com", "sqlpassword") as ICredentialsByHost;
 
         smtpServer.EnableSsl = true;
@@ -119,6 +148,10 @@ public class Login : MonoBehaviour
         { return true; };
 
         smtpServer.Send(mail);
+        //if(codeInput.text == code)
+        //{
+        //    UICeo.SwitchPanel();
+        //}
         Debug.Log("Success");
 
 
@@ -127,12 +160,38 @@ public class Login : MonoBehaviour
     {
         const string chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789";
         return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
-        
+
     }
     public void ForgotPass()
     {
-        inputEmail = emailRecovery.text;
-        SendEmail(inputEmail);
+        if (emailRecovery.text != "" && emailRecovery.text.Contains("@"))
+        {
+            inputEmail = emailRecovery.text;
+            SendEmail(inputEmail);
+            UICeo.SwitchToSecCodePanel();
+            emptyFieldWarning.SetActive(false);
+
+        }
+        else
+        {
+            emptyFieldWarning.SetActive(true);
+            Debug.Log("The input field is empty");
+        }
+
+    }
+    public void PasswordReset()
+    {
+
+        if (codeInput.text == code)
+        {
+            UICeo.SwitchToPasswordResetPanel();
+            Debug.Log("Password Reset");
+        }
+        else
+        {
+            Debug.Log("The security code is incorrect");
+        }
     }
     #endregion
+
 }

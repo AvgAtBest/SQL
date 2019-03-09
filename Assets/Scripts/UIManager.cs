@@ -18,13 +18,22 @@ public class UIManager : MonoBehaviour
     public GameObject registerPanel;
     public GameObject recoveryPanel;
     public GameObject secCodePanel;
+    public GameObject codeAcceptedPanel;
     // Use this for initialization
     void Start () {
 		
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void SwitchToPasswordResetPanel()
+    {
+        codeAcceptedPanel.SetActive(true);
+        secCodePanel.SetActive(false);
+    }
+    public void SwitchToSecCodePanel()
+    {
+        secCodePanel.SetActive(true);
+        recoveryPanel.SetActive(false);
+
+    }
 }
