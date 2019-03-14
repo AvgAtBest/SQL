@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 #endregion
 #region System Security directories
 using System.Net;
@@ -110,6 +111,7 @@ public class Login : MonoBehaviour
 
         StartCoroutine(LoginUser(inputUsername, inputPassword));
         Debug.Log("Login");
+
     }
     IEnumerator LoginUser(string _username, string _password)
     {
@@ -121,7 +123,14 @@ public class Login : MonoBehaviour
         WWW www = new WWW(loginUserURL, loginUserForm);
 
         yield return www;
+
         Debug.Log(www.text);
+
+    }
+    public void LogIntoScene()
+    {
+
+        SceneManager.LoadScene(1);
     }
     #endregion
     #region Recovery Data
