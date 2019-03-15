@@ -27,12 +27,13 @@
 			if($row['password'] == $password)
 			{
 				echo "Login success";
-				echo $row['password'];
+				//echo $row['password'];
+				
 			}
 			else
 			{
 				echo "password incorect";
-				echo "password is = ". $row['password'];
+				//echo "password is = ". $row['password'];
 			}
 		}
 	} else {

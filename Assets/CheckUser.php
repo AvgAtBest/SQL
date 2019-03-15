@@ -13,13 +13,20 @@
 	{
 		die("Conneciton Failed.". mysqli_connect_error());
 	}
-	while($row = mysqli_fetch_assoc($result))
+	$checkuser = "SELECT username FROM users WHERE email = '".$email."'";
+	$checkuserresult = mysqli_query($conn, $checkuser);
+	if(mysqli_num_rows($checkuserresult) > 0)
 	{
-		echo $row['username'];
+		while($row = mysqli_fetch_assoc($checkuserresult))
+		{
+			//echo $row['username'];
+			echo "user found";
+		}
 	}
 	else
 	{
-		echo "No user";
+		echo "no user";
 	}
+
 
 ?>
