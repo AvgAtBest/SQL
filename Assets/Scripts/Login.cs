@@ -39,10 +39,16 @@ public class Login : MonoBehaviour
     public string inputPassword;
     public string inputPasswordConfirm;
     public string inputEmail;
+    public string newPasswordString;
+    public string confirmNewPassString;
     [Header("Port")]
     public int port = 587; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
     [Header("Scripts")]
     public UIManager UICeo;
+    [Header("Password Reset")]
+    public InputField newPasswordField;
+    public InputField confirmNewPassword;
+
     #endregion
     private void Awake()
     {
@@ -83,7 +89,7 @@ public class Login : MonoBehaviour
         {
             StartCoroutine(CreateUser(inputUsername, inputPassword, inputEmail));
             Debug.Log("testing");
-            if(inputPassword == inputPasswordConfirm)
+            if (inputPassword == inputPasswordConfirm)
             {
                 wrongPasswordConfirmText.SetActive(false);
             }
@@ -93,7 +99,7 @@ public class Login : MonoBehaviour
             }
 
         }
-        else if(inputPassword != inputPasswordConfirm || emailCreate.text.Contains(""))
+        else if (inputPassword != inputPasswordConfirm || emailCreate.text.Contains(""))
         {
 
             invalidEmailAddressText.SetActive(!emailCreate.text.Contains("@"));
@@ -126,11 +132,38 @@ public class Login : MonoBehaviour
 
         Debug.Log(www.text);
 
+        if (www.text == "Login success")
+        {
+            LogIntoScene(1);
+        }
+
     }
-    public void LogIntoScene()
+    public void LogIntoScene(int sceneIndex)
     {
 
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(sceneIndex);
+    }
+    IEnumerator CheckUser(string _email)
+    {
+        string checkUserURL = "http://localhost/SQueaLsystem/CheckUser.php";
+        WWWForm checkUserForm = new WWWForm();
+        checkUserForm.AddField("emailPost", _email);
+
+        WWW www = new WWW(checkUserURL, checkUserForm);
+        yield return www;
+
+        if(www.text == "user found")
+        {
+            Debug.Log("Sent email");
+            SendEmail(_email);
+            UICeo.SwitchToSecCodePanel();
+            emptyFieldWarning.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("No email found.");
+        }
+
     }
     #endregion
     #region Recovery Data
@@ -145,7 +178,7 @@ public class Login : MonoBehaviour
         mail.From = ourMail;
 
         mail.Subject = "SQueaL Games User";
-        mail.Body = "Hello" + inputUsername + "\n Here is the recovery code you requested to reset your password: " + code;
+        mail.Body = "Hello user\n Here is the recovery code you requested to reset your password: " + code;
 
         SmtpClient smtpServer = new SmtpClient("smtp.gmail.com");
         smtpServer.Port = port; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
@@ -157,10 +190,7 @@ public class Login : MonoBehaviour
         { return true; };
 
         smtpServer.Send(mail);
-        //if(codeInput.text == code)
-        //{
-        //    UICeo.SwitchPanel();
-        //}
+
         Debug.Log("Success");
 
 
@@ -176,9 +206,10 @@ public class Login : MonoBehaviour
         if (emailRecovery.text != "" && emailRecovery.text.Contains("@"))
         {
             inputEmail = emailRecovery.text;
-            SendEmail(inputEmail);
-            UICeo.SwitchToSecCodePanel();
-            emptyFieldWarning.SetActive(false);
+            Debug.Log(inputEmail);
+            StartCoroutine(CheckUser(inputEmail));
+            //UICeo.SwitchToSecCodePanel();
+            //emptyFieldWarning.SetActive(false);
 
         }
         else
@@ -194,6 +225,7 @@ public class Login : MonoBehaviour
         if (codeInput.text == code)
         {
             UICeo.SwitchToPasswordResetPanel();
+            //ChangePass();
             Debug.Log("Password Reset");
         }
         else
@@ -202,5 +234,30 @@ public class Login : MonoBehaviour
         }
     }
     #endregion
+    #region Change Password
+    public void ChangePass()
+    {
+        newPasswordString = newPasswordField.text;
+        confirmNewPassString = confirmNewPassword.text;
 
+        if (newPasswordString == confirmNewPassString)
+        {
+            StartCoroutine(ChangePassword(newPasswordString, inputEmail));
+        }
+    }
+    IEnumerator ChangePassword(string _password, string _email)
+    {
+        Debug.Log(_password + " " + _email);
+        string changePasswordURL = "http://localhost/SQueaLsystem/UpdatePassword.php";
+        WWWForm changePasswordForm = new WWWForm();
+        changePasswordForm.AddField("passwordPost", _password);
+        changePasswordForm.AddField("emailPost", _email);
+
+        WWW www = new WWW(changePasswordURL, changePasswordForm);
+        yield return www;
+
+  
+    }
+    #endregion
+   
 }
