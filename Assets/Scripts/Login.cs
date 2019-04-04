@@ -50,14 +50,19 @@ public class Login : MonoBehaviour
     public InputField confirmNewPassword;
 
     #endregion
+    #region Awake
     private void Awake()
     {
+        //Find GameManager game object in scene
         UICeo = GameObject.Find("UIManager").GetComponent<UIManager>();
 
     }
+    #endregion
     #region Register Data
+    //Creates user and inputs them into database, referencing _username string, _password string and _email string
     IEnumerator CreateUser(string _username, string _password, string _email)
     {
+        //Finds the InsertUser.php file located in htDocs xampp
         //grabs info from database
         string createUserURL = "http://localhost/SQueaLsystem/InsertUser.php";
 
@@ -67,6 +72,7 @@ public class Login : MonoBehaviour
         insertUserForm.AddField("emailPost", _email);
 
         WWW www = new WWW(createUserURL, insertUserForm);
+        //Return the form data, adds new data to user table 
         yield return www;
 
         Debug.Log(www.text);
@@ -74,9 +80,11 @@ public class Login : MonoBehaviour
 
     public void InputRegisterData()
     {
-
+        //sets the "Create username" input field to true
         usernameCreate.enabled = true;
+        //sets the "password create" input field to true
         passwordCreate.enabled = true;
+        //sets the "email create" input field to true
         emailCreate.enabled = true;
         inputUsername = usernameCreate.text;
         inputPassword = passwordCreate.text;
@@ -84,26 +92,33 @@ public class Login : MonoBehaviour
         inputEmail = emailCreate.text;
 
 
-
+        //Checks if the text string in the input Password field matches the text string in the password confirm field
+        //And the email text string contains the @ symbol
         if (inputPassword == inputPasswordConfirm && emailCreate.text.Contains("@"))
         {
+            //Start Coroutine Create User using the text in username, password and email.
             StartCoroutine(CreateUser(inputUsername, inputPassword, inputEmail));
             Debug.Log("testing");
+            //if the password matches
             if (inputPassword == inputPasswordConfirm)
             {
+                //disable "unmatching password" tooltip
                 wrongPasswordConfirmText.SetActive(false);
             }
+            //if the emailField text contains the @ symbol
             if (emailCreate.text.Contains("@"))
             {
+                //disable "invalid email" tooltip
                 invalidEmailAddressText.SetActive(false);
             }
 
         }
+        //if the inputpassword does not match the confirm password text, or the email text is blank
         else if (inputPassword != inputPasswordConfirm || emailCreate.text.Contains(""))
         {
-
+            //Enables "invalid email" tooltip
             invalidEmailAddressText.SetActive(!emailCreate.text.Contains("@"));
-
+            //enables "unmatching password" tooltip
             wrongPasswordConfirmText.SetActive(inputPassword != inputPasswordConfirm);
         }
 
@@ -237,6 +252,7 @@ public class Login : MonoBehaviour
     #region Change Password
     public void ChangePass()
     {
+        //
         newPasswordString = newPasswordField.text;
         confirmNewPassString = confirmNewPassword.text;
 
