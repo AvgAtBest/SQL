@@ -6,16 +6,18 @@
 	
 	$username = $_POST["usernamePost"];
 	$password = $_POST["passwordPost"];
-	//$email = $_POST["emailPost"];
-	
+
+	//establishes connection to database
 	$conn = new mysqli($server_name, $server_user, $server_password, $database_name);
-	
+		//if it fails to gain a connection to the database
 	if(!$conn)
 	{
+		//kill connection, return connection failed
 		die("Conneciton Failed.". mysqli_connect_error());
 	}
+	//Locates and choses password from users table where username data from Login script matches database user
 	$finduser = "SELECT password FROM users WHERE username = '".$username."' ";
-	$finduserresult = mysqli_query($conn, $finduser);
+	$finduserresult = mysqli_query($conn, $finduser);//finds user result, connects
 
 	
 	//Get the result and confirm login
@@ -24,21 +26,23 @@
 		//search through the rows
 		while($row = mysqli_fetch_assoc($finduserresult))
 		{
+			//if it finds a matching password from a selected username in the password row
 			if($row['password'] == $password)
 			{
 				echo "Login success";
-				//echo $row['password'];
+				//Login success
 				
 			}
 			else
 			{
+				//wrong password dummy
 				echo "password incorect";
-				//echo "password is = ". $row['password'];
+				
 			}
 		}
 	} else {
 		echo "user not found";
-		//echo "password is = ". $row['password'];
+		//couldnt find a matching username
 	}
 
 
