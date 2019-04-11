@@ -19,23 +19,28 @@ public class Login : MonoBehaviour
 {
     #region Variables
     [Header("LoginDeets")]
+    //login input fields
     public InputField usernameLogin;
     public InputField passwordLogin;
     [Header("RegisterDeets")]
+    //register input fields
     public InputField usernameCreate;
     public InputField passwordCreate;
     public InputField emailCreate;
     public InputField passwordConfirm;
+    //Warning Tooltips
     public GameObject invalidEmailAddressText;
     public GameObject wrongPasswordConfirmText;
     public GameObject incorrectSecCode;
     [Header("Recovery")]
     public InputField emailRecovery;
     private static System.Random random = new System.Random();
+    //Sec code
     public string code;
     public InputField codeInput;
     public GameObject emptyFieldWarning;
     [Header("Strings")]
+    //strings used for data
     public string inputUsername;
     public string inputPassword;
     public string inputPasswordConfirm;
@@ -43,10 +48,13 @@ public class Login : MonoBehaviour
     public string newPasswordString;
     public string confirmNewPassString;
     [Header("Port")]
+    //server port
     public int port = 587; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
     [Header("Scripts")]
+    //UIManager script
     public UIManager UICeo;
     [Header("Password Reset")]
+    //Input Fields for Password Reset
     public InputField newPasswordField;
     public InputField confirmNewPassword;
 
