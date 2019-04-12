@@ -49,7 +49,7 @@ public class Login : MonoBehaviour
     public string confirmNewPassString;
     [Header("Port")]
     //server port
-    public int port = 587; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
+    private int port = 587; // PORTS TO TRY IF ONE DOESNT WORK: 25, 587, 465
     [Header("Scripts")]
     //UIManager script
     public UIManager UICeo;
